@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+  db:
+    image: mariadb:latest
+    restart: always
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=maturita
+      - MYSQL_USER=maturita
+      - MYSQL_PASSWORD=maturita
+      - MYSQL_DATABASE=django_dev
+    ports:
+      - 3306:3306
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - "8080:80"
+    depends_on:
+      - db    
+
+volumes:
+  mariadb_data:
